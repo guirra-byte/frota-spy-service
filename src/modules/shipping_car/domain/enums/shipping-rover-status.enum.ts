@@ -1,0 +1,6 @@
+export enum HireStatus {
+  AVAILABLE = 'AVAILABLE',
+  UNAVAILABLE = 'UNAVAILABLE',
+  HIRED = 'HIRED',
+  UNDER_SUPPORT = 'UNDER_SUPPORT',
+}

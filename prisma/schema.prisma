@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Infraction {
+  id String @id @default(uuid())
+
+  lawCode      String
+  status       String
+  notice       String
+  moment       String
+  description  String
+  localization String
+  type         String
+  cost         Int
+  sender       String
+
+  rover      ShippingCar @relation(fields: [roverPlate], references: [plate])
+  roverPlate String
+}
+
+model Lodger {
+  id           String @id @default(uuid())
+  name         String @unique
+  email        String @unique
+  cpf          String @unique
+  phoneNumber  String
+  paymentInfos String
+
+  ShippingCar    ShippingCar?     @relation(fields: [shippingCarId], references: [id])
+  ScheduleRental ScheduleRental[]
+  shippingCarId  String?
+}
+
+model ShippingCar {
+  id          String       @id @default(uuid())
+  plate       String       @unique
+  description String
+  tags        String
+  lodgers     Lodger[]
+  Infraction  Infraction[]
+}
+
+model ScheduleRental {
+  id        String   @id @default(uuid())
+  startAt   DateTime @default(now())
+  finishAt  DateTime @updatedAt
+  nextCheck DateTime
+
+  terms                        String
+  roverPlate                   String
+  cost                         Int
+  status                       String
+  outInfractionsLaunchDeadline Boolean @default(false)
+
+  lodger   Lodger @relation(fields: [lodgerId], references: [id])
+  lodgerId String
+
+  @@map("schedule_rental")
+}

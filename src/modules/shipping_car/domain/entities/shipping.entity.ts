@@ -11,17 +11,12 @@ interface IShippingRoverProps {
   description: string;
 }
 
-export interface ILodgerNode {
-  lodger: Lodger;
-  next: ILodgerNode | null;
-}
-
 export class ShippingCar extends Entity {
   name: string;
   plate: string;
   description: string;
   tags: Tag[] = [];
-  lodgers?: ILodgerNode;
+  lodgers?: Lodger[];
   infractions: Infraction[][] = [];
   hireSchedule: ScheduleRental[][] = [];
   status: HireStatus = HireStatus['UNAVAILABLE'];

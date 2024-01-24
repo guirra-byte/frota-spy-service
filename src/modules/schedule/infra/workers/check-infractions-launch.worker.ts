@@ -2,13 +2,14 @@ import { Job, Worker } from 'bullmq';
 import { IVehicleInfractionProvider } from '../../../../shared/infra/providers/vehicle-infraction-provider/interfaces/Ivehicle-infraction-provider.interface';
 import { inject } from 'tsyringe';
 import { ScheduleRental } from '../../domain/entities/schedule-rental.entity';
-import { ILodgerNode } from '../../../shipping_car/domain/entities/shipping.entity';
+
 import { IDateProvider } from '../../../../shared/infra/providers/date-provider/interfaces/Idate-provider.interface';
 import { IQueueManagerProvider } from '../../../../shared/infra/providers/queue-manager-provider/interfaces/Iqueue-manager-provider.interface';
 import { Infraction } from '../../../../shared/domain/entities/infraction.entity';
 import { IWorkerData } from '../../../../shared/domain/interfaces/Iworker.interface';
 import { IShippingCarData } from '../../../shipping_car/infra/db/abstract/Ishipping-car.data';
 import { IScheduleData } from '../db/abstract/Ischedule.data';
+import { ILodgerNode, lodgersLinkedList } from '../lodgers-linked-list';
 
 export interface IDriveInfractionOwnership {
   plate: string;
@@ -126,7 +127,14 @@ export class CheckInfractionsLaunchWorker extends Worker {
 
               if (claimShippingCar) {
                 if (claimShippingCar.lodgers) {
-                  await inLaunchDeadline(claimShippingCar.lodgers);
+                  //Recursive function to build a linked list based in asc order of Lodger´s rentals
+                  const lodgersNode = await lodgersLinkedList(
+                    claimShippingCar.lodgers,
+                  );
+
+                  if (lodgersNode) {
+                    await inLaunchDeadline(lodgersNode);
+                  }
                 }
               }
             }

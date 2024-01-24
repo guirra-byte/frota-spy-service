@@ -3,11 +3,12 @@ import { ScheduleRental } from '../../domain/entities/schedule-rental.entity';
 import { IScheduleRentalDTO } from '../../domain/dtos/Ischedule-rental.dto';
 import { HireStatus } from '../../../shipping_car/domain/enums/shipping-rover-status.enum';
 import { ScheduleRentalStatus } from '../../domain/enums/schedule-rental-status.enum';
-import { ILodgerNode } from '../../../shipping_car/domain/entities/shipping.entity';
+
 import { IWorkerData } from '../../../../shared/domain/interfaces/Iworker.interface';
 import { IScheduleData } from '../db/abstract/Ischedule.data';
 import { inject } from 'tsyringe';
 import { IShippingCarData } from '../../../shipping_car/infra/db/abstract/Ishipping-car.data';
+import { ILodgerNode, lodgersLinkedList } from '../lodgers-linked-list';
 
 export class ScheduleRentalWorker extends Worker {
   constructor(
@@ -71,12 +72,15 @@ export class ScheduleRentalWorker extends Worker {
 
               if (claimShippingCar) {
                 if (claimShippingCar.lodgers) {
-                  await insertInShippingCarHistory(claimShippingCar.lodgers);
+                  const lodgersNode = await lodgersLinkedList(
+                    claimShippingCar.lodgers,
+                  );
+
+                  if (lodgersNode) {
+                    await insertInShippingCarHistory(lodgersNode);
+                  }
                 } else {
-                  claimShippingCar.lodgers = {
-                    lodger: scheduleRental.lodger,
-                    next: null,
-                  };
+                  claimShippingCar.lodgers = [scheduleRental.lodger];
                 }
               }
 

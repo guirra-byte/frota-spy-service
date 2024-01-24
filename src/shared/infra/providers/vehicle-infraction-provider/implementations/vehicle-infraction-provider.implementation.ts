@@ -8,9 +8,17 @@ export class VehicleInfractionProvider implements IVehicleInfractionProvider {
   constructor() {
     async () => {
       this.AUTH = `${process.env.BRIGHT_DATA_USERNAME}:${process.env.BRIGHT_DATA_PASSWORD}`;
-      this.browser = await Puppeteer.connect({
-        browserWSEndpoint: `wss://${this.AUTH}@brd.superproxy.io:9222`,
-      });
+
+      try {
+        this.browser = await Puppeteer.connect({
+          browserWSEndpoint: `wss://${this.AUTH}@brd.superproxy.io:9222`,
+        });
+      } catch (_err) {
+        throw new Error(
+          `Não foi possível realizar a 
+          conexão com a Bright Data - ${_err}`,
+        );
+      }
     };
   }
 

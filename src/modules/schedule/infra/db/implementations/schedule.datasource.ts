@@ -1,30 +1,58 @@
 import { injectable } from 'tsyringe';
 import { IScheduleData } from '../abstract/Ischedule.data';
-import { ScheduleRental } from '../../../domain/entities/schedule-rental.entity';
 import { ScheduleRentalStatus } from '../../../domain/enums/schedule-rental-status.enum';
+import { PrismaClient, ScheduleRental } from '@prisma/client';
+import { PrismaProvider } from '../../../../../shared/infra/providers/prisma/prisma-provider';
 
 @injectable()
 export class ScheduleDatasource implements IScheduleData {
-  save(input: any): Promise<void> {
-    throw new Error('Method not implemented.');
+  private prismaProvider: PrismaClient;
+
+  constructor() {
+    this.prismaProvider = PrismaProvider;
   }
 
-  findUsageScheduleByPlate(plate: string): Promise<ScheduleRental> {
-    throw new Error('Method not implemented.');
+  async save(input: any): Promise<void> {
+    await this.prismaProvider.scheduleRental.create({ data: input });
   }
 
-  updateRentalStatus(
+  async findUsageScheduleByPlate(
+    plate: string,
+  ): Promise<ScheduleRental | null> {
+    const schedule = await this.prismaProvider.scheduleRental.findFirst({
+      where: { roverPlate: plate },
+      include: {
+        lodger: true,
+      },
+    });
+
+    return schedule;
+  }
+
+  async updateRentalStatus(
     rentalId: string,
     status: ScheduleRentalStatus,
   ): Promise<void> {
-    throw new Error('Method not implemented.');
+    await this.prismaProvider.scheduleRental.update({
+      where: { id: rentalId },
+      data: { status },
+    });
   }
 
-  updateOutInfractionLaunch(ids: string[], status: boolean): Promise<void> {
-    throw new Error('Method not implemented.');
+  async updateOutInfractionLaunch(
+    ids: string[],
+    status: boolean,
+  ): Promise<void> {
+    await this.prismaProvider.scheduleRental.updateMany({
+      where: { id: { in: ids } },
+      data: { status: { set: `${status}` } },
+    });
   }
 
-  updateCheckLaterDate(ids: string[], date: Date): Promise<void> {
-    throw new Error('Method not implemented.');
+  async updateCheckLaterDate(ids: string[], date: Date): Promise<void> {
+    await this.prismaProvider.scheduleRental.updateMany({
+      where: { id: { in: ids } },
+      data: { nextCheck: date },
+    });
   }
 }

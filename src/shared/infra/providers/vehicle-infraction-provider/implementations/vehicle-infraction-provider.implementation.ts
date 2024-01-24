@@ -2,8 +2,8 @@ import { IVehicleInfractionProvider } from '../interfaces/Ivehicle-infraction-pr
 import Puppeteer, { Browser } from 'puppeteer';
 
 export class VehicleInfractionProvider implements IVehicleInfractionProvider {
-  browser: Browser;
-  AUTH: string;
+  private browser: Browser;
+  private AUTH: string;
 
   constructor() {
     async () => {

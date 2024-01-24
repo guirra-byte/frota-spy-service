@@ -47,16 +47,15 @@ model ShippingCar {
 }
 
 model ScheduleRental {
-  id        String   @id @default(uuid())
-  startAt   DateTime @default(now())
-  finishAt  DateTime @updatedAt
-  nextCheck DateTime
-
+  id                           String @id @default(uuid())
+  startAt                      String
+  finishAt                     String
+  nextCheck                    String
   terms                        String
   roverPlate                   String
   cost                         Int
   status                       String
-  outInfractionsLaunchDeadline Boolean @default(false)
+  outInfractionsLaunchDeadline Int    @default(0)
 
   lodger   Lodger @relation(fields: [lodgerId], references: [id])
   lodgerId String

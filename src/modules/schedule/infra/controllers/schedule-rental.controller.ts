@@ -8,6 +8,8 @@ export class ScheduleRentalController {
 
     const scheduleRentalService = container.resolve(ScheduleRentalService);
     await scheduleRentalService.execute(data);
-    return response.status(201).send();
+    return response
+      .status(202)
+      .send(`Sua solicitação está sendo processada...`);
   }
 }

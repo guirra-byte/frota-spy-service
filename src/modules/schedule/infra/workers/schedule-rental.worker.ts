@@ -3,7 +3,6 @@ import { ScheduleRental } from '../../domain/entities/schedule-rental.entity';
 import { IScheduleRentalDTO } from '../../domain/dtos/Ischedule-rental.dto';
 import { HireStatus } from '../../../shipping_car/domain/enums/shipping-rover-status.enum';
 import { ScheduleRentalStatus } from '../../domain/enums/schedule-rental-status.enum';
-
 import { IWorkerData } from '../../../../shared/domain/interfaces/Iworker.interface';
 import { IScheduleData } from '../db/abstract/Ischedule.data';
 import { inject } from 'tsyringe';
@@ -85,7 +84,6 @@ export class ScheduleRentalWorker extends Worker {
               }
 
               await this.scheduleDatasource.save(scheduleRental);
-
               return;
             };
           case 'cancel_rental':
@@ -110,6 +108,9 @@ export class ScheduleRentalWorker extends Worker {
       {
         autorun: true,
         concurrency: 50,
+        removeOnFail: {
+          count: undefined,
+        },
       },
     );
   }

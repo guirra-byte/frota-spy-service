@@ -9,6 +9,8 @@ import { ScheduleDatasource } from '../../../modules/schedule/infra/db/implement
 import { IScheduleData } from '../../../modules/schedule/infra/db/abstract/Ischedule.data';
 import { IShippingCarData } from '../../../modules/shipping_car/infra/db/abstract/Ishipping-car.data';
 import { ShippingCarDatasource } from '../../../modules/shipping_car/infra/db/implementations/shipping-car.datasource';
+import { ScheduleRentalListenerController } from '../../../modules/schedule/infra/controllers/schedule-rental-listener.controller';
+import EventEmitter from 'node:events';
 
 // Datasources
 container.registerSingleton<IScheduleData>(
@@ -33,3 +35,5 @@ container.registerInstance<IVehicleInfractionProvider>(
 );
 
 container.registerInstance<IDateProvider>('DateProvider', new DateProvider());
+
+container.registerInstance('NodeEvents', new EventEmitter());

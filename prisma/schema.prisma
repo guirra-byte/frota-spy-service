@@ -38,12 +38,15 @@ model Lodger {
 }
 
 model ShippingCar {
-  id          String       @id @default(uuid())
-  plate       String       @unique
-  description String
-  tags        String
-  lodgers     Lodger[]
-  Infraction  Infraction[]
+  id               String           @id @default(uuid())
+  plate            String           @unique
+  description      String
+  tags             String
+  lodgers          Lodger[]
+  infractions      Infraction[]
+  inOperationSince String
+  hireSchedule     ScheduleRental[]
+  status           String
 }
 
 model ScheduleRental {
@@ -57,8 +60,10 @@ model ScheduleRental {
   status                       String
   outInfractionsLaunchDeadline Int    @default(0)
 
-  lodger   Lodger @relation(fields: [lodgerId], references: [id])
-  lodgerId String
+  lodger        Lodger       @relation(fields: [lodgerId], references: [id])
+  lodgerId      String
+  ShippingCar   ShippingCar? @relation(fields: [shippingCarId], references: [id])
+  shippingCarId String?
 
   @@map("schedule_rental")
 }

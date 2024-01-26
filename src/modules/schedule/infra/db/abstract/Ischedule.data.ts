@@ -1,4 +1,4 @@
-import { ScheduleRental } from '@prisma/client';
+import { ScheduleRental } from '../../../domain/entities/schedule-rental.entity';
 import { ScheduleRentalStatus } from '../../../domain/enums/schedule-rental-status.enum';
 
 export interface IScheduleData {

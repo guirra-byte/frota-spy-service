@@ -2,6 +2,7 @@ import { ICreateShippingRoverDTO } from '../../../domain/dtos/Icreate-shipping-r
 import { IShippingCarData } from '../abstract/Ishipping-car.data';
 import { PrismaProvider } from '../../../../../shared/infra/providers/prisma/prisma-provider';
 import { PrismaClient, ShippingCar } from '@prisma/client';
+import { HireStatus } from '../../../domain/enums/shipping-rover-status.enum';
 
 export class ShippingCarDatasource implements IShippingCarData {
   private prismaProvider: PrismaClient;
@@ -11,13 +12,21 @@ export class ShippingCarDatasource implements IShippingCarData {
   }
 
   async save(data: ICreateShippingRoverDTO): Promise<void> {
-    await this.prismaProvider.shippingCar.create({ data: { ...data } });
+    await this.prismaProvider.shippingCar.create({
+      data: {
+        ...data,
+        status: HireStatus['UNAVAILABLE'],
+        inOperationSince: `${new Date()}`,
+      },
+    });
   }
 
   async findCarByPlate(plate: string): Promise<ShippingCar | null> {
     const car = await this.prismaProvider.shippingCar.findUnique({
       where: { plate },
-      include: { lodgers: true, Infraction: { include: { rover: true } } },
+      include: {
+        lodgers: true,
+      },
     });
 
     return car;
@@ -25,7 +34,11 @@ export class ShippingCarDatasource implements IShippingCarData {
 
   async findAll(): Promise<ShippingCar[]> {
     const cars = await this.prismaProvider.shippingCar.findMany({
-      include: { Infraction: { include: { rover: true } }, lodgers: true },
+      include: {
+        lodgers: true,
+        infractions: { include: { rover: true } },
+        hireSchedule: { include: { ShippingCar: true, lodger: true } },
+      },
     });
 
     return cars;

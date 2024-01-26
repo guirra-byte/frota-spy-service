@@ -1,11 +1,11 @@
-import { Queue } from 'bullmq';
+import { Queue, QueueOptions } from 'bullmq';
 import { IQueueManagerProvider } from '../interfaces/Iqueue-manager-provider.interface';
 
 export class QueueManagerProvider implements IQueueManagerProvider {
   constructor() {}
 
-  async queue(name: string): Promise<Queue> {
-    const newQueue = new Queue(name);
+  async queue(name: string, options: QueueOptions | undefined): Promise<Queue> {
+    const newQueue = new Queue(name, options);
     return newQueue;
   }
 
